@@ -1,1 +1,1 @@
-# EPAM_Practics
+# Практические задания EPAM
