@@ -1,14 +1,12 @@
 package ua.nure.chulkov.Practice2;
 
-import java.util.Iterator;
-
 public class Demo {
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) {
         MyListImpl list = new MyListImpl();
-        list.add("A");
-        list.add("B");
-        list.add(433);
-        list.add(888);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
         list.add(new Object());
         list.add(null);
         list.add("C");
@@ -23,23 +21,24 @@ public class Demo {
         }
 
         System.out.println("Show iterator using while:");
-        Iterator<Object> it = list.iterator();
+        ListIterator it = list.listIterator();
         while (it.hasNext()) {
-            System.out.println(it.next());
+            System.out.print(it.next() + " ");
         }
+        System.out.println();
         it.remove();
         System.out.println(list);
 
         System.out.println("Show listIterator using while:");
         ListIterator listIterator = list.listIterator();
-        while (listIterator.hasPrevious()){
-            System.out.println(listIterator.previous());
+        while (it.hasPrevious()){
+            System.out.print(it.previous() + " ");
 
         }
+        System.out.println();
         listIterator.remove();
         listIterator.next();
         listIterator.set(11111);
-
         System.out.println(list);
     }
 }

@@ -1,5 +1,5 @@
 package ua.nure.chulkov.Practice2;
 
-interface ListIterable {
+public interface ListIterable {
     ListIterator listIterator();
 }

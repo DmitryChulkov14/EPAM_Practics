@@ -1,9 +1,11 @@
 package ua.nure.chulkov.Practice2;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class MyListImpl implements MyList, ListIterable {
-    private final int ARRAY_LENGTH = 10;
+    private static final int ARRAY_LENGTH = 10;
 
     private Object[] array;
     private int size;
@@ -17,9 +19,7 @@ public class MyListImpl implements MyList, ListIterable {
         if (size == array.length) {
             Object[] temp = array;
             array = new Object[temp.length * 2];
-            for (int i = 0; i < temp.length; i++) {
-                array[i] = temp[i];
-            }
+            System.arraycopy(temp, 0, array, 0, temp.length);
         }
         array[size++] = element;
     }
@@ -33,40 +33,38 @@ public class MyListImpl implements MyList, ListIterable {
     @Override
     public boolean remove(Object o) {
         if (o == null) {
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++){
                 if (array[i] == null) {
                     deleteCurElementAndShift(i);
                     return true;
                 }
+            }
         } else {
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++){
                 if (o.equals(array[i])) {
                     deleteCurElementAndShift(i);
                     return true;
                 }
+            }
         }
         return false;
     }
 
     private void deleteCurElementAndShift(int i) {
-        for (int j = i; j < size; j++) {
-            array[j] = array[j + 1];
-        }
+        System.arraycopy(array, i + 1, array, i, size - i);
         size--;
     }
 
     @Override
     public Object[] toArray() {
         Object[] arr = new Object[size];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = array[i];
-        }
+        System.arraycopy(array, 0, arr, 0, arr.length);
         return arr;
     }
 
     @Override
     public int size() {
-        return array.length;
+        return size;
     }
 
     @Override
@@ -90,8 +88,8 @@ public class MyListImpl implements MyList, ListIterable {
     @Override
     public boolean containsAll(MyList c) {
         Object[] arr = c.toArray();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == null) {
+        for (Object anArr : arr) {
+            if (!this.contains(anArr)) {
                 return false;
             }
         }
@@ -101,22 +99,22 @@ public class MyListImpl implements MyList, ListIterable {
     @Override
     public String toString() {
         Object[] o = new Object[size];
-        for (int i = 0; i < o.length; i++) {
-            o[i] = array[i];
-        }
-        return "{" + Arrays.toString(o) +
-                "}";
+        System.arraycopy(array, 0, o, 0, o.length);
+        return Arrays.toString(o);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         MyListImpl objects = (MyListImpl) o;
 
-        if (size != objects.size) return false;
-        return Arrays.equals(array, objects.array);
+        return size == objects.size && Arrays.equals(array, objects.array);
     }
 
     @Override
@@ -134,33 +132,50 @@ public class MyListImpl implements MyList, ListIterable {
 
     private class IteratorImpl implements Iterator<Object> {
 
-        int cursor;       // index of next element to return
-        int lastRet = -1; // index of last element returned; -1 if no such
+        private int cursor;
+        private int lastRet = -1;
+
+        int getCursor() {
+            return cursor;
+        }
+
+        void setCursor(int cursor) {
+            this.cursor = cursor;
+        }
+
+        int getLastRet() {
+            return lastRet;
+        }
+
+        void setLastRet(int lastRet) {
+            this.lastRet = lastRet;
+        }
 
         @Override
         public boolean hasNext() {
-            return cursor != size;
+            return getCursor() != size;
         }
 
         @Override
         public Object next() {
-            int i = cursor;
+            int i = getCursor();
             if (i >= size) {
                 throw new NoSuchElementException();
             }
             Object[] elementData = MyListImpl.this.array;
-            cursor = i + 1;
-            return elementData[lastRet = i];
+            setCursor(i + 1);
+            setLastRet(i);
+            return elementData[getLastRet()];
         }
 
         @Override
         public void remove() {
-            if (lastRet < 0) {
+            if (getLastRet() < 0) {
                 throw new IllegalStateException();
             }
-            MyListImpl.this.remove(array[lastRet]);
-            cursor = lastRet;
-            lastRet = -1;
+            MyListImpl.this.remove(array[getLastRet()]);
+            setCursor(getLastRet());
+            setLastRet(-1);
         }
     }
 
@@ -170,29 +185,27 @@ public class MyListImpl implements MyList, ListIterable {
     }
 
     private class ListIteratorImpl extends IteratorImpl implements ListIterator {
-        ListIteratorImpl(){
-            cursor = size;
-        }
 
         @Override
         public boolean hasPrevious() {
-            return cursor != 0;
+            return getCursor() != 0;
         }
 
         @Override
         public Object previous() {
-            int i = cursor - 1;
+            int i = getCursor() - 1;
             if (i < 0){
                 throw new NoSuchElementException();
             }
             Object[] elementData = MyListImpl.this.array;
-            cursor = i;
-            return elementData[lastRet = i];
+            setCursor(i);
+            setLastRet(i);
+            return elementData[getLastRet()];
         }
 
         @Override
         public void set(Object e) {
-            array[lastRet] = e;
+            array[getLastRet()] = e;
         }
     }
 }
