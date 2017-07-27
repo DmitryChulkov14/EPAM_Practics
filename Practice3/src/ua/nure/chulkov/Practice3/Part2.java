@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Part2 {
+class Part2 {
 
-    private static final String REGEX = "[a-zA-Z–∞-—è–ê-–Ø]+";
+    private static final String EOL = System.lineSeparator();
 
-    private static String convert(String input) {
+    private static final String REGEX = "[a-zA-Z‡-ˇ¿-ﬂ]+";
+
+    static String convert(String input) {
         Map<String, Integer> words = new LinkedHashMap<>();
         StringBuilder result = new StringBuilder();
         Pattern p = Pattern.compile(REGEX);
@@ -37,24 +39,26 @@ public class Part2 {
         String minLengthWords = getCorrectStringViewFromListOfWords(minLengthWordsList);
         String maxLengthWords = getCorrectStringViewFromListOfWords(maxLengthWordsList);
 
-        result.append("Min: ").append(minLengthWords).append("\r\n")
+        result.append("Min: ").append(minLengthWords).append(EOL)
                 .append("Max: ").append(maxLengthWords);
 
         return result.toString();
     }
 
     private static int getMaxLength(int maxLength, Map.Entry word) {
+        int max = maxLength;
         if ((Integer) word.getValue() > maxLength) {
-            maxLength = (int) word.getValue();
+            max = (int) word.getValue();
         }
-        return maxLength;
+        return max;
     }
 
     private static int getMinLength(int minLength, Map.Entry word) {
+        int min = minLength;
         if ((Integer) word.getValue() < minLength) {
-            minLength = (int) word.getValue();
+            min = (int) word.getValue();
         }
-        return minLength;
+        return min;
     }
 
     private static String getCorrectStringViewFromListOfWords(List<String> minLengthWordsList) {
@@ -67,9 +71,5 @@ public class Part2 {
         if ((int) word.getValue() == minLength){
             minLengthWords.add(word.getKey().toString());
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Part2.convert(Util.readFile("part2.txt")));
     }
 }

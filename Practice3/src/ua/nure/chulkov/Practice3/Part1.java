@@ -4,35 +4,52 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Part1 {
+class Part1 {
 
-    private static final String LOGIN_NAME_EMAIL_REGEX = "(.+);(.+);(.+@.+)";
+    private static final String EOL = System.lineSeparator();
 
-    private static String convert1(String input) {
+    private static final String LOGIN_NAME_EMAIL_REGEX = "([a-zA-Zà-ÿÀ-ß]+);" +
+            "([a-zA-Zà-ÿÀ-ß]+\\s[a-zA-Zà-ÿÀ-ß]+)" +
+            ";([a-zA-Zà-ÿÀ-ß]+@[a-zA-Zà-ÿÀ-ß]+\\S[a-zA-Zà-ÿÀ-ß]+)" +
+            "(\\s+)?";
+
+    private static final String LOGIN_NAME_EMAILNAME_DOMAIN_REGEX = "([a-zA-Zà-ÿÀ-ß]+);" +
+            "([a-zA-Zà-ÿÀ-ß]+\\s[a-zA-Zà-ÿÀ-ß]+)" +
+            ";([a-zA-Zà-ÿÀ-ß]+)" +
+            "@([a-zA-Zà-ÿÀ-ß]+\\S[a-zA-Zà-ÿÀ-ß]+)" +
+            "(\\s+)?";
+
+    static String convert1(String input) {
         StringBuilder result = new StringBuilder();
         Pattern p = Pattern.compile(LOGIN_NAME_EMAIL_REGEX);
         Matcher m = p.matcher(input);
         while (m.find()) {
-            result.append(m.group(1)).append(" ==> ").append(m.group(3)).append("\n\r");
+            result.append(m.group(1)).append(" ==> ").append(m.group(3));
+            if (m.group(4) != null) {
+                result.append(m.group(4));
+            }
         }
         return result.toString();
     }
 
-    private static String convert2(String input) {
+    static String convert2(String input) {
         StringBuilder result = new StringBuilder();
         Pattern p = Pattern.compile(LOGIN_NAME_EMAIL_REGEX);
         Matcher m = p.matcher(input);
         while (m.find()) {
-            result.append(m.group(2)).append(" (email: ").append(m.group(3)).append(")").append("\n\r");
+            result.append(m.group(2)).append(" (email: ").append(m.group(3)).append(")");
+            if (m.group(4) != null) {
+                result.append(m.group(4));
+            }
         }
         return result.toString();
     }
 
-    private static String convert3(String input) {
+    static String convert3(String input) {
         List<String> logins = new ArrayList<>();
         Map<String, List<String>> domenLogin = new LinkedHashMap<>();
         StringBuilder result = new StringBuilder();
-        Pattern p = Pattern.compile("(.+);(.+);(.+)@(.+)");
+        Pattern p = Pattern.compile(LOGIN_NAME_EMAILNAME_DOMAIN_REGEX);
         Matcher m = p.matcher(input);
 
         fillMapByDomains(domenLogin, m);
@@ -41,22 +58,24 @@ public class Part1 {
             setLoginsWithCurrentDomain(logins, m, entry);
             domenLogin.put((String) entry.getKey(), logins);
             String loginsWithoutBracers = editViewOfLogins(entry);
-            createResult(logins, result, entry, loginsWithoutBracers);
+            createResult(logins, result, entry, domenLogin, loginsWithoutBracers);
         }
         return result.toString();
     }
 
-    private static void createResult(List<String> logins, StringBuilder sb, Map.Entry entry, String loginsWithoutBracers) {
+    private static void createResult(List<String> logins, StringBuilder sb, Map.Entry entry, Map<String, List<String>> domenLogin, String loginsWithoutBracers) {
         sb.append(entry.getKey())
                 .append(" ==> ")
-                .append(loginsWithoutBracers)
-                .append("\r\n");
+                .append(loginsWithoutBracers);
+        if (!entry.equals(domenLogin.entrySet().toArray()[domenLogin.size() - 1])) {
+            sb.append(EOL);
+        }
         logins.clear();
     }
 
     private static void setLoginsWithCurrentDomain(List<String> logins, Matcher m, Map.Entry entry) {
         while (m.find()) {
-            if (entry.getKey().equals(m.group(4))){
+            if (entry.getKey().equals(m.group(4))) {
                 logins.add(m.group(1));
             }
         }
@@ -76,18 +95,20 @@ public class Part1 {
         m.reset();
     }
 
-    private static String convert4(String input) {
-        StringBuilder result = new StringBuilder("Login;Name;Email;Passowrd\r\n");
-        Pattern p = Pattern.compile("(.+;)(.+;)(.+@.+)");
+    static String convert4(String input) {
+        StringBuilder result = new StringBuilder("Login;Name;Email;Password" + EOL);
+        Pattern p = Pattern.compile(LOGIN_NAME_EMAIL_REGEX);
         Matcher m = p.matcher(input);
         while (m.find()) {
             String randomNumber = generateRandomNumber();
             result.append(m.group(1))
+                    .append(";")
                     .append(m.group(2))
+                    .append(";")
                     .append(m.group(3))
                     .append(";")
                     .append(randomNumber)
-                    .append("\n\r");
+                    .append(EOL);
         }
         return result.toString();
     }
@@ -100,16 +121,5 @@ public class Part1 {
             randomNumber.append(randomInt);
         }
         return randomNumber.toString();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Part1.convert1(Util.readFile("part1.txt")));
-        System.out.println("----------------------------------------------");
-        System.out.println(Part1.convert2(Util.readFile("part1.txt")));
-        System.out.println("----------------------------------------------");
-        System.out.println(Part1.convert3(Util.readFile("part1.txt")));
-        System.out.println("----------------------------------------------");
-        System.out.println(Part1.convert4(Util.readFile("part1.txt")));
-        System.out.println("----------------------------------------------");
     }
 }

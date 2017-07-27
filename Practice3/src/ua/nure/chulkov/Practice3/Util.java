@@ -17,9 +17,4 @@ public class Util {
         }
         return res;
     }
-
-    public static void main(String[] args) {
-        System.out.println(readFile("part1.txt"));
-        System.out.println(readFile("part2.txt"));
-    }
 }
