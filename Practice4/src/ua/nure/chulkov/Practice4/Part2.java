@@ -26,7 +26,7 @@ public class Part2 {
 
         writeNumbersToFile(Paths.get(RAW_DATA), _10RandomNumbers);
 
-        String randomNumbersFromFile = readNumbersFromFile(Paths.get(RAW_DATA));
+        String randomNumbersFromFile = readNumbersFromFile(RAW_DATA);
         String sortedNumbersFromFile = sortNumbers(randomNumbersFromFile);
 
         System.out.println("output ==> " + sortedNumbersFromFile);
@@ -57,10 +57,8 @@ public class Part2 {
                 StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    private static String readNumbersFromFile(Path path) throws IOException {
-        List<String> numbersFromFile = Files.readAllLines(path);
-
-        return numbersFromFile.get(0); // we expect only 1 line of numbers
+    private static String readNumbersFromFile(String path) {
+        return Util.readFile(path, "Cp1251");
     }
 
     private static String sortNumbers(String numbers) {
@@ -85,7 +83,7 @@ public class Part2 {
             for (int j = 0; j < n - i - 1; j++)
                 if (arr.get(j) > arr.get(j + 1)) {
                     int temp = arr.get(j);
-                    arr.set(j, j + 1);
+                    arr.set(j, arr.get(j + 1));
                     arr.set(j + 1, temp);
                 }
     }
