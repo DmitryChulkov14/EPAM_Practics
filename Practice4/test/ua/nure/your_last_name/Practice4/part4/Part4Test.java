@@ -1,14 +1,14 @@
 package ua.nure.your_last_name.Practice4.part4;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class Part4Test {
 
-	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
+    @Test
+    public void test() {
+        fail("Not yet implemented");
+    }
 
 }
